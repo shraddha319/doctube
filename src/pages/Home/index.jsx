@@ -1,10 +1,10 @@
-import "./Home.scss";
-import "./Carousel.scss";
-import bgVideo from "../../assets/home/our_planet_tiger.mp4";
+import './Home.scss';
+import './Carousel.scss';
+import bgVideo from '../../assets/home/our_planet_tiger.mp4';
 // import bgVideo from "../../assets/home/our_planet.mp4";
-import netflixLogo from "../../assets/home/Netflix_logo.svg";
+import netflixLogo from '../../assets/home/Netflix_logo.svg';
 
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 export default function Home() {
   return (
@@ -21,11 +21,7 @@ export default function Home() {
             Winner of two Emmy Awards - Our Planet is a groundbreaking Netflix
             original documentary series.
           </h3>
-          <Link
-            to="/explore"
-            className="btn btn--white btn--hover--expand-x"
-            href="#"
-          >
+          <Link to="/watch" className="btn btn--white btn--hover--expand-x">
             Watch Now
           </Link>
         </div>
