@@ -1,0 +1,77 @@
+.Home {
+  width: 100%;
+  height: 100vh;
+
+  .home__landing {
+    height: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3em;
+    color: white;
+  }
+
+  video,
+  .home__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  video {
+    object-fit: cover;
+  }
+
+  .home__overlay {
+    background: rgba(0, 0, 0, 0.2);
+    background-blend-mode: overlay;
+  }
+
+  .home__content {
+    max-width: 50%;
+    padding: 1rem;
+
+    .content__logo {
+      width: 120px;
+    }
+
+    .content__text {
+      font-size: 1.4em;
+      line-height: 1.4em;
+      padding: 0.4rem 0 1.4em 0;
+    }
+
+    .content__title {
+      font-size: 3.2em;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 0.4em 1em;
+      font-size: 1rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      transition: letter-spacing 250ms;
+      cursor: pointer;
+    }
+
+    .btn--white {
+      color: black;
+      background: white;
+    }
+
+    .btn--hover--expand-x:hover {
+      letter-spacing: 2px;
+    }
+  }
+
+  .home__content--our-planet {
+    .content__title {
+      letter-spacing: 10px;
+      font-weight: 200;
+    }
+  }
+}
