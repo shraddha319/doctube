@@ -1,19 +1,25 @@
 :root {
-    --height-header: 80px;
+  --height-header: 80px;
 }
 
 .header {
-    z-index: 1;
+  z-index: 1;
+  height: auto;
 }
 
 .header {
+  .nav__item {
+    margin: 0.8rem 1rem 0.5rem;
 
-    .nav__item .link {
-        font-weight: 600;
+    & > .link {
+      font-weight: 600;
+      & > * {
+        margin-right: 10px;
+      }
     }
 
-    .nav__item .link.active {
-        color: var(--clr-primary);
+    & > .link.active {
+      color: var(--clr-primary);
     }
-
+  }
 }

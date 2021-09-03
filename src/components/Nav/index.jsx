@@ -14,20 +14,51 @@ export default function Nav({ pathname }) {
 
       <div className="header__brand brand">
         <Link className="link" to="/">
-          <img className="icon--lg" src={logoIcon} />
+          <img className="icon--lg" src={logoIcon} alt="App logo" />
         </Link>
       </div>
 
       <nav className="nav nav--main">
         <ul className="list--no-bullets">
           <li className="nav__item">
-            <NavLink activeClassName="active" className="link" to="/watch">
+            <NavLink end activeClassName="active" className="link" to="/watch">
               Watch
             </NavLink>
           </li>
           <li className="nav__item">
-            <NavLink activeClassName="active" className="link" to="/my-list">
+            <NavLink
+              end
+              activeClassName="active"
+              className="link"
+              to="/my-list"
+            >
               My List
+            </NavLink>
+          </li>
+          <li className="nav__item">
+            <NavLink
+              end
+              activeClassName="active"
+              className="link flex--row"
+              to="/my-list/liked"
+            >
+              <span class="fa--xs">
+                <i class="far fa-thumbs-up"></i>
+              </span>
+              <p>Liked</p>
+            </NavLink>
+          </li>
+          <li className="nav__item">
+            <NavLink
+              end
+              activeClassName="active"
+              className="link flex--row"
+              to="/my-list/watch-later"
+            >
+              <span class="fa--xs">
+                <i class="far fa-clock"></i>
+              </span>
+              <p>Saved</p>
             </NavLink>
           </li>
         </ul>
