@@ -1,8 +1,26 @@
 import { formError } from '../constants';
 
-const { EMAIL_INVALID, PASSWORD_INVALID, PASSWORD_MATCH } = formError;
+const {
+  EMAIL_INVALID,
+  PASSWORD_INVALID,
+  PASSWORD_MATCH,
+  LETTERS_ONLY,
+} = formError;
 
 export const registerValidationRules = {
+  firstName: {
+    required: true,
+    format: {
+      regexp: /^[a-zA-Z]+$/,
+      message: LETTERS_ONLY,
+    },
+  },
+  lastName: {
+    format: {
+      regexp: /^[a-zA-Z]*$/,
+      message: LETTERS_ONLY,
+    },
+  },
   email: {
     required: true,
     format: {

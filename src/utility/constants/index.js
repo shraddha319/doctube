@@ -7,6 +7,7 @@ export const formError = {
   PASSWORD_MATCH: 'Passwords do not match.',
   FIELD_REQUIRED: 'This is a required field',
   USERNAME_EMAIL_INVALID: 'Please enter valid email or password',
+  LETTERS_ONLY: 'Alphabets only.',
 };
 
 export const LIKED_PL = 'Liked';

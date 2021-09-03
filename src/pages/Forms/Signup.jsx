@@ -5,13 +5,15 @@ import { registerValidationRules, validate } from '../../utility';
 
 export default function Signup() {
   const [input, setInput] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
   const [error, setError] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -29,18 +31,37 @@ export default function Signup() {
           <p className="text text--md text--primary">Sign Up</p>
         </div>
         <form className="form" onSubmit={(e) => e.preventDefault()}>
-          <div class="form__field field">
-            <label class="field__label" htmlhtmlFor="name">
-              Full Name
-            </label>
-            <input
-              class="field__input"
-              id="name"
-              type="text"
-              value={input.name}
-              onChange={(e) => setInput({ ...input, name: e.target.value })}
-            />
-            <p className="field__error">{error.name}</p>
+          <div class="flex--row">
+            <div className="form__field field field--required">
+              <label class="field__label" htmlFor="first-name">
+                First Name
+              </label>
+              <input
+                class="field__input"
+                id="first-name"
+                type="text"
+                value={input.firstName}
+                onChange={(e) =>
+                  setInput({ ...input, firstName: e.target.value })
+                }
+              />
+              <p className="field__error small">{error.firstName}</p>
+            </div>
+            <div className="form__field field">
+              <label class="field__label" htmlFor="last-name">
+                Last Name
+              </label>
+              <input
+                class="field__input"
+                id="last-name"
+                type="text"
+                value={input.lastName}
+                onChange={(e) =>
+                  setInput({ ...input, lastName: e.target.value })
+                }
+              />
+              <p className="field__error small">{error.lastName}</p>
+            </div>
           </div>
           <div class="form__field field field--required">
             <label class="field__label" htmlFor="email">
@@ -54,7 +75,7 @@ export default function Signup() {
               value={input.email}
               onChange={(e) => setInput({ ...input, email: e.target.value })}
             />
-            <p className="field__error">{error.email}</p>
+            <p className="field__error small">{error.email}</p>
           </div>
           <div class="form__field field field--required">
             <label class="field__label" htmlFor="password">
@@ -68,15 +89,15 @@ export default function Signup() {
               value={input.password}
               onChange={(e) => setInput({ ...input, password: e.target.value })}
             />
-            <p className="field__error">{error.password}</p>
+            <p className="field__error small">{error.password}</p>
           </div>
           <div class="form__field field field--required">
-            <label class="field__label" htmlFor="password">
+            <label class="field__label" htmlFor="confirm-password">
               Confirm Password
             </label>
             <input
               class="field__input"
-              id="password"
+              id="confirm-password"
               type="password"
               autocomplete="new-password"
               value={input.confirmPassword}
@@ -84,7 +105,7 @@ export default function Signup() {
                 setInput({ ...input, confirmPassword: e.target.value })
               }
             />
-            <p className="field__error">{error.confirmPassword}</p>
+            <p className="field__error small">{error.confirmPassword}</p>
           </div>
           <button
             className="btn justify-center btn--primary"
