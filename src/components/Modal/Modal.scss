@@ -1,0 +1,69 @@
+.Modal--container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+
+  .Modal {
+    display: block;
+    min-width: 250px;
+    width: auto;
+    height: auto;
+    background: white;
+    border-radius: 0.8rem;
+    padding: 0.4rem;
+
+    .Modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.2rem 0.6rem;
+      border-bottom: 1px solid var(--clr-gray-light);
+
+      h1 {
+        font-size: 1.2rem;
+        font-weight: 400;
+      }
+    }
+
+    .Modal__content {
+      padding: 0.5rem;
+    }
+  }
+}
+
+.playlists--add {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .playlists--current .input--checkbox {
+    & > * {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .playlists--new {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--clr-gray-light);
+
+    input {
+      font-size: 1rem;
+      padding: 0.2rem 0.5rem;
+      border: none;
+      border-bottom: 1px solid var(--clr-gray);
+      outline-color: transparent;
+    }
+  }
+}
