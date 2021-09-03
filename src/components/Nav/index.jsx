@@ -1,6 +1,6 @@
 import { NavLink, Link } from 'react-router-dom';
 import './Nav.scss';
-import logoIcon from '../../assets/logo.svg';
+import { ReactComponent as LogoIcon } from '../../assets/logo.svg';
 
 export default function Nav({ pathname }) {
   return (
@@ -14,7 +14,7 @@ export default function Nav({ pathname }) {
 
       <div className="header__brand brand">
         <Link className="link" to="/">
-          <img className="icon--lg" src={logoIcon} alt="App logo" />
+          <LogoIcon className="icon--lg" fill="#fff" />
         </Link>
       </div>
 

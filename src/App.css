@@ -111,3 +111,8 @@
 .align-center {
   align-items: center;
 }
+
+.icon--lg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
