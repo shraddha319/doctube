@@ -12,7 +12,10 @@ export default function WatchVideo() {
     data: { videos, playlists },
     dispatchData,
   } = useData();
-  const { authToken } = useAuth();
+  const {
+    auth: { authToken },
+  } = useAuth();
+
   const video = videos.find(
     (video) => lowerCaseHyphenate(video.title) === title
   );
@@ -77,7 +80,7 @@ export default function WatchVideo() {
           className={`btn btn--icon ${
             isLiked ? 'btn--selected' : 'btn--action'
           }`}
-          onClick={() => (authToken ? likeHandler : navigate('/login'))}
+          onClick={() => (authToken ? likeHandler() : navigate('/login'))}
         >
           <span className="btn__icon fa--sm">
             <i className="far fa-thumbs-up"></i>
@@ -87,7 +90,7 @@ export default function WatchVideo() {
           className={`btn btn--icon ${
             isWatchLater ? 'btn--selected' : 'btn--action'
           }`}
-          onClick={() => (authToken ? watchLaterHandler : navigate('/login'))}
+          onClick={() => (authToken ? watchLaterHandler() : navigate('/login'))}
         >
           <span className="btn__icon fa--sm">
             <i className="far fa-clock"></i>

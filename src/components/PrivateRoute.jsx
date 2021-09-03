@@ -2,7 +2,9 @@ import { useAuth } from '../context';
 import { Navigate, Route } from 'react-router-dom';
 
 export default function PrivateRoute({ path, ...props }) {
-  const { authToken } = useAuth();
+  const {
+    auth: { authToken },
+  } = useAuth();
 
   return authToken ? (
     <Route {...props} />
