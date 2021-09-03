@@ -1,0 +1,14 @@
+.Watch {
+  .watch__videos {
+    flex-wrap: wrap;
+
+    .DisplayCard {
+      margin: 0.5rem;
+    }
+  }
+
+  .watch__filter {
+    margin: 1rem 0;
+    align-items: center;
+  }
+}
