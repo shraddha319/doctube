@@ -1,0 +1,113 @@
+@import './layout.css';
+
+.App,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --clr-black: #272727;
+}
+
+.btn--action {
+  color: var(--clr-gray);
+}
+
+.btn--action:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
+.btn--selected {
+  color: var(--clr-primary);
+  transform: scale(1.2);
+}
+
+.btn--xs {
+  font-size: 0.8rem;
+}
+
+.btn--gray {
+  background: var(--clr-gray-light);
+  color: var(--clr-gray);
+}
+
+.btn--round {
+  border-radius: 10px;
+}
+
+.btn--round--full {
+  border-radius: 50%;
+}
+
+.btn--gray:hover {
+  opacity: 0.7;
+}
+
+.link--hover:hover {
+  text-decoration: underline;
+  color: var(--clr-primary);
+}
+
+.field__error {
+  color: var(--clr-error);
+}
+
+.title {
+  font-weight: 500;
+  margin-bottom: 0.35em;
+  padding: 0 0.5em;
+  letter-spacing: 0.025em;
+}
+
+.title--h1 {
+  font-size: 6rem;
+  line-height: 1;
+}
+
+.title--h2 {
+  font-size: 3.75rem;
+  line-height: 1;
+}
+
+.title--h3 {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.title--h4 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.title--h5 {
+  font-size: 1.75rem;
+  line-height: 2rem;
+}
+
+.title--h6 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.body {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.label {
+  font-weight: 400;
+}
+
+.small {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 300;
+}
+
+.align-center {
+  align-items: center;
+}
