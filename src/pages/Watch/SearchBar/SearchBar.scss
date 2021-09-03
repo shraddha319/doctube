@@ -1,0 +1,35 @@
+.SearchBar {
+    width: 100%;
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+
+    .search__container {
+        width: 550px;
+        border-radius: 5px;
+        display: grid;
+        grid-template-columns: 12% 88%;
+        font-size: 1.4rem;
+        overflow: hidden;
+        border: 1px solid var(--clr-gray-light);
+
+        .search__input {
+            grid-column: 2/3;
+            height: inherit;
+            font-size: inherit;
+            padding: 0.5rem;
+            border: none;
+            border-right: 1px solid var(--clr-gray-light);
+            outline: none;
+        }
+
+        .search__icon {
+            grid-column: 1/2;
+            color: var(--clr-gray);
+            padding: 0.2rem;
+            text-align: center;
+            font-size: inherit;
+            cursor: default;
+        }
+    }
+}
