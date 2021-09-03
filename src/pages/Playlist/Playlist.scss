@@ -1,0 +1,16 @@
+.playlist {
+  .playlist__videos {
+    display: flex;
+
+    .playlist__video {
+      margin: 0.5rem 1rem;
+      position: relative;
+
+      & > .btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+      }
+    }
+  }
+}
