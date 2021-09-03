@@ -1,5 +1,5 @@
 import './App.css';
-import { Nav, AddToPlaylist, PrivateRoute } from './components';
+import { Nav, AddToPlaylist, PrivateRoute, ScrollToTop } from './components';
 import {
   Home,
   Watch,
@@ -19,17 +19,19 @@ export default function App() {
   return (
     <div className="App">
       <Nav pathname={location.pathname} />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/watch" element={<Watch />} />
-        <Route path="/watch/:title" element={<WatchVideo />} />
-        {/* should include movie id */}
-        <PrivateRoute path="/my-list" element={<MyList />} />
-        <PrivateRoute path="/my-list/:playlistName" element={<Playlist />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ScrollToTop>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/watch" element={<Watch />} />
+          <Route path="/watch/:title" element={<WatchVideo />} />
+          {/* should include movie id */}
+          <PrivateRoute path="/my-list" element={<MyList />} />
+          <PrivateRoute path="/my-list/:playlistName" element={<Playlist />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ScrollToTop>
       {query.get('action') === 'update_playlist' && (
         <PrivateRoute path="/watch/:title/" element={<AddToPlaylist />} />
       )}
