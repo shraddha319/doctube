@@ -1,0 +1,19 @@
+:root {
+    --height-header: 80px;
+}
+
+.header {
+    z-index: 1;
+}
+
+.header {
+
+    .nav__item .link {
+        font-weight: 600;
+    }
+
+    .nav__item .link.active {
+        color: var(--clr-primary);
+    }
+
+}
