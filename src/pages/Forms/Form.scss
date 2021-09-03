@@ -1,0 +1,41 @@
+.form--signup,
+.form--login {
+  font-size: 0.8rem;
+
+  .form__container {
+    width: 480px;
+
+    .form__header {
+      text-align: center;
+    }
+
+    .form {
+      border: 1px solid var(--clr-gray-light);
+      border-radius: 10px;
+      width: 100%;
+      padding: 1em 3em;
+      display: flex;
+      flex-flow: column;
+
+      & > * {
+        margin: 0.5em 0;
+      }
+
+      .form__field {
+        input {
+          border: 1px solid var(--clr-gray-light);
+        }
+      }
+    }
+
+    .form__footer {
+      padding: 1rem;
+      margin: 1rem 0;
+      font-size: 0.8rem;
+      text-align: center;
+      width: 100%;
+      border: 1px solid var(--clr-gray-light);
+      border-radius: 10px;
+    }
+  }
+}
