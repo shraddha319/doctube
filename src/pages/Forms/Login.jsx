@@ -36,7 +36,7 @@ export default function Login() {
               autocomplete="email"
               onChange={(e) => setInput({ ...input, email: e.target.value })}
             />
-            <p className="field__error">{error.email}</p>
+            <p className="field__error small">{error.email}</p>
           </div>
           <div class="form__field field field--required">
             <div className="justify-between">
@@ -54,7 +54,7 @@ export default function Login() {
               autocomplete="current-password"
               onChange={(e) => setInput({ ...input, password: e.target.value })}
             />
-            <p className="field__error">{error.password}</p>
+            <p className="field__error small">{error.password}</p>
           </div>
           <button
             className="btn justify-center btn--primary"
