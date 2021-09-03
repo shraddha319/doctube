@@ -1,6 +1,15 @@
 .Watch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   .watch__videos {
     flex-wrap: wrap;
+
+    .loader {
+      width: 80px;
+      margin: 2rem;
+    }
 
     .DisplayCard {
       margin: 0.5rem;

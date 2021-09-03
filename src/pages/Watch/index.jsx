@@ -1,5 +1,5 @@
 import './Watch.scss';
-import { VideoList } from '../../components';
+import { VideoList, Loader } from '../../components';
 import { useData } from '../../context';
 import {
   getFilteredAndSearchedList,
@@ -111,13 +111,13 @@ export default function Watch() {
       <div className="watch__filter">
         <Filter filter={filter} dispatchFilter={dispatchFilter} />
       </div>
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="watch__videos flex--row">
-          {<VideoList videos={getFilteredAndSearchedList(videos, filter)} />}
-        </div>
-      )}
+      <div className="watch__videos flex--row">
+        {loading ? (
+          <Loader />
+        ) : (
+          <VideoList videos={getFilteredAndSearchedList(videos, filter)} />
+        )}
+      </div>
     </div>
   );
 }

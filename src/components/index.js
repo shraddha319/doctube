@@ -6,6 +6,7 @@ import AddToPlaylist from './Modal/AddToPlaylist';
 import EmptyList from './VideoList/EmptyList';
 import PrivateRoute from './PrivateRoute';
 import ScrollToTop from './ScrollToTop';
+import Loader from './Loader';
 
 export {
   Nav,
@@ -16,4 +17,5 @@ export {
   EmptyList,
   PrivateRoute,
   ScrollToTop,
+  Loader,
 };
