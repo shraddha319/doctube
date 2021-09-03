@@ -1,0 +1,33 @@
+.Video-List {
+  width: 95%;
+  margin: 2.5rem auto;
+
+  .video-list__header {
+    align-items: center;
+  }
+
+  .video-list__content {
+    margin: 0.5rem auto;
+    flex-flow: row wrap;
+  }
+}
+
+.video-list--empty {
+  width: 300px;
+  height: 320px;
+  background-image: url('../../assets/no-video.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--clr-gray);
+  padding: 1rem;
+  text-align: center;
+
+  & > * {
+    margin: 0.5rem 0;
+  }
+}
