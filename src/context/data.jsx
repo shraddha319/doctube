@@ -1,12 +1,11 @@
 import { createContext, useContext, useReducer } from 'react';
 import dataReducer from './reducer/data';
-import { docs } from '../data';
 
 const DataContext = createContext();
 
 export function DataProvider({ children }) {
   const [data, dispatchData] = useReducer(dataReducer, {
-    videos: docs,
+    videos: [],
     playlists: [
       {
         _id: 'pl1',

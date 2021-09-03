@@ -6,14 +6,16 @@ import {
   stringifyFilterObj,
   parseURLParamStr,
 } from '../../utility/utils';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import Filter from './Filter';
+import { getVideos } from '../../api';
 
 export default function Watch() {
   const {
     data: { videos },
+    dispatchData,
   } = useData();
   const initFilter = {
     genre: [],
@@ -24,6 +26,8 @@ export default function Watch() {
     search: '',
   };
   const [filter, dispatchFilter] = useReducer(filterReducer, initFilter);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const { search } = useLocation();
 
@@ -42,6 +46,27 @@ export default function Watch() {
       type: 'INITIALISE_FILTER',
       payload: { filter: UrlParamObj },
     });
+
+    (async () => {
+      setLoading(true);
+      try {
+        const {
+          data: {
+            success,
+            data: { videos },
+          },
+        } = await getVideos();
+
+        if (success)
+          dispatchData({ type: 'FETCH_VIDEOS', payload: { videos } });
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response);
+        }
+        console.log(error);
+      }
+      setLoading(false);
+    })();
   }, []);
 
   function filterReducer(state, { type, payload }) {
@@ -86,9 +111,13 @@ export default function Watch() {
       <div className="watch__filter">
         <Filter filter={filter} dispatchFilter={dispatchFilter} />
       </div>
-      <div className="watch__videos flex--row">
-        {<VideoList videos={getFilteredAndSearchedList(videos, filter)} />}
-      </div>
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="watch__videos flex--row">
+          {<VideoList videos={getFilteredAndSearchedList(videos, filter)} />}
+        </div>
+      )}
     </div>
   );
 }
