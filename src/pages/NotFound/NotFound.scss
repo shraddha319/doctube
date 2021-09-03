@@ -1,0 +1,17 @@
+.NotFound {
+    flex-flow: column;
+
+    &>* {
+        margin: 0.5rem 0;
+    }
+
+    .not-found__image {
+        width: 600px;
+        height: 400px;
+    }
+
+    .not-found__title {
+        font-weight: 800;
+        font-size: 3.5rem;
+    }
+}
