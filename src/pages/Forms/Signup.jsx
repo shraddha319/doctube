@@ -1,7 +1,10 @@
 import './Form.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { registerValidationRules, validate } from '../../utility';
+import { signUpUser, loginUser } from '../../api';
+import { Loader } from '../../components';
+import { useAuth } from '../../context';
 
 export default function Signup() {
   const [input, setInput] = useState({
@@ -11,17 +14,64 @@ export default function Signup() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState({
+  const [formError, setFormError] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { dispatchAuth } = useAuth();
 
-  function signupHandler() {
-    const validationError = validate(input, registerValidationRules);
-    setError(validationError);
+  async function signupHandler() {
+    const errors = validate(input, registerValidationRules);
+    setFormError(errors);
+
+    if (Object.keys(errors).length === 0) {
+      setLoading(true);
+      try {
+        const reqBody = (({ email, firstName, lastName, password }) => ({
+          email,
+          firstName,
+          lastName,
+          password,
+        }))(input);
+
+        const { status: signUpStatus } = await signUpUser(reqBody);
+        const {
+          data: {
+            data: { user, authToken },
+          },
+          status: loginStatus,
+        } = await loginUser({ email: input.email, password: input.password });
+
+        if (signUpStatus === 201 && loginStatus === 200) {
+          dispatchAuth({ type: 'LOGIN_USER', payload: { user, authToken } });
+          navigate('/my-list');
+        }
+      } catch (err) {
+        if (err.response) {
+          const {
+            data: {
+              error: { code, errors },
+            },
+            status,
+          } = err.response;
+
+          if (status === 400 && errors) {
+            setFormError(
+              errors.reduce((errObj, { message, key, type }) => {
+                return { ...errObj, [key]: message };
+              }, {})
+            );
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
   }
 
   return (
@@ -45,7 +95,7 @@ export default function Signup() {
                   setInput({ ...input, firstName: e.target.value })
                 }
               />
-              <p className="field__error small">{error.firstName}</p>
+              <p className="field__error small">{formError.firstName}</p>
             </div>
             <div className="form__field field">
               <label class="field__label" htmlFor="last-name">
@@ -60,7 +110,7 @@ export default function Signup() {
                   setInput({ ...input, lastName: e.target.value })
                 }
               />
-              <p className="field__error small">{error.lastName}</p>
+              <p className="field__error small">{formError.lastName}</p>
             </div>
           </div>
           <div class="form__field field field--required">
@@ -75,7 +125,7 @@ export default function Signup() {
               value={input.email}
               onChange={(e) => setInput({ ...input, email: e.target.value })}
             />
-            <p className="field__error small">{error.email}</p>
+            <p className="field__error small">{formError.email}</p>
           </div>
           <div class="form__field field field--required">
             <label class="field__label" htmlFor="password">
@@ -89,7 +139,7 @@ export default function Signup() {
               value={input.password}
               onChange={(e) => setInput({ ...input, password: e.target.value })}
             />
-            <p className="field__error small">{error.password}</p>
+            <p className="field__error small">{formError.password}</p>
           </div>
           <div class="form__field field field--required">
             <label class="field__label" htmlFor="confirm-password">
@@ -105,14 +155,14 @@ export default function Signup() {
                 setInput({ ...input, confirmPassword: e.target.value })
               }
             />
-            <p className="field__error small">{error.confirmPassword}</p>
+            <p className="field__error small">{formError.confirmPassword}</p>
           </div>
           <button
             className="btn justify-center btn--primary"
             type="submit"
             onClick={signupHandler}
           >
-            Register
+            {loading ? <Loader /> : 'Register'}
           </button>
         </form>
         <div className="form__footer">

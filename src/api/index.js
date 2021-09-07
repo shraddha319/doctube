@@ -1,3 +1,4 @@
 import { getVideos } from './video.api';
+import { signUpUser, loginUser } from './user.api';
 
-export { getVideos };
+export { getVideos, signUpUser, loginUser };

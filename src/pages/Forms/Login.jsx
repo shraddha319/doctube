@@ -1,21 +1,70 @@
 import './Form.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { loginValidationRules, validate } from '../../utility';
+import { loginUser } from '../../api';
+import { Loader } from '../../components';
+import { useAuth } from '../../context';
 
 export default function Login() {
   const [input, setInput] = useState({
     email: '',
     password: '',
   });
-  const [error, setError] = useState({
+  const [formError, setFormError] = useState({
+    login: '',
     email: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { dispatchAuth } = useAuth();
 
-  function loginHandler() {
+  async function loginHandler() {
     const validationError = validate(input, loginValidationRules);
-    setError(validationError);
+    setFormError({ ...formError, ...validationError });
+
+    if (Object.keys(validationError).length === 0) {
+      setLoading(true);
+      try {
+        const {
+          data: {
+            data: { user, authToken },
+          },
+          status: loginStatus,
+        } = await loginUser(input);
+
+        if (loginStatus === 200) {
+          dispatchAuth({ type: 'LOGIN_USER', payload: { user, authToken } });
+          navigate('/my-list');
+        }
+      } catch (err) {
+        if (err.response) {
+          const {
+            data: {
+              error: { code, errors },
+            },
+            status,
+          } = err.response;
+
+          if (status === 400 && errors) {
+            setFormError(
+              errors.reduce((errObj, { message, key, type }) => {
+                return { ...errObj, [key]: message };
+              }, {})
+            );
+          } else if (status === 401) {
+            setFormError({
+              email: '',
+              password: '',
+              login: 'Incorrect username/password',
+            });
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
   }
 
   return (
@@ -25,6 +74,7 @@ export default function Login() {
           <p className="text text--md text--primary">Login In</p>
         </div>
         <form className="form" onSubmit={(e) => e.preventDefault()}>
+          <p className="form__field field__error small">{formError.login}</p>
           <div class="form__field field field--required">
             <label class="field__label" for="email">
               Email
@@ -36,7 +86,7 @@ export default function Login() {
               autocomplete="email"
               onChange={(e) => setInput({ ...input, email: e.target.value })}
             />
-            <p className="field__error small">{error.email}</p>
+            <p className="field__error small">{formError.email}</p>
           </div>
           <div class="form__field field field--required">
             <div className="justify-between">
@@ -54,14 +104,14 @@ export default function Login() {
               autocomplete="current-password"
               onChange={(e) => setInput({ ...input, password: e.target.value })}
             />
-            <p className="field__error small">{error.password}</p>
+            <p className="field__error small">{formError.password}</p>
           </div>
           <button
             className="btn justify-center btn--primary"
             type="submit"
             onClick={loginHandler}
           >
-            Login
+            {loading ? <Loader /> : 'Login'}
           </button>
         </form>
         <div className="form__footer">
