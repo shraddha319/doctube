@@ -1,8 +1,11 @@
 import { NavLink, Link } from 'react-router-dom';
 import './Nav.scss';
 import { ReactComponent as LogoIcon } from '../../assets/logo.svg';
+import { useAuth } from '../../context';
 
 export default function Nav({ pathname }) {
+  const { auth } = useAuth();
+
   return (
     <header
       className="header"
@@ -30,9 +33,9 @@ export default function Nav({ pathname }) {
               end
               activeClassName="active"
               className="link"
-              to="/my-list"
+              to="/playlists"
             >
-              My List
+              Playlists
             </NavLink>
           </li>
           <li className="nav__item">
@@ -40,7 +43,7 @@ export default function Nav({ pathname }) {
               end
               activeClassName="active"
               className="link flex--row"
-              to="/my-list/liked"
+              to="/playlists/liked"
             >
               <span class="fa--xs">
                 <i class="far fa-thumbs-up"></i>
@@ -53,7 +56,7 @@ export default function Nav({ pathname }) {
               end
               activeClassName="active"
               className="link flex--row"
-              to="/my-list/watch-later"
+              to="/playlists/watch-later"
             >
               <span class="fa--xs">
                 <i class="far fa-clock"></i>
@@ -67,11 +70,30 @@ export default function Nav({ pathname }) {
       <nav className="nav nav--social">
         <ul className="list--no-bullets">
           <li className="nav__item">
-            <NavLink activeClassName="active" className="link" to="/login">
-              <span className="fa--sm">
-                <i className="far fa-user-circle"></i>
-              </span>
-            </NavLink>
+            {auth?.authToken ? (
+              <NavLink
+                end
+                activeClassName="active"
+                className="link flex--row"
+                to="/"
+              >
+                <span className="fa--xs">
+                  <i className="far fa-user-circle"></i>
+                </span>
+                <p>{auth.user.firstName}</p>
+              </NavLink>
+            ) : (
+              <NavLink
+                end
+                activeClassName="active"
+                className="link flex--row"
+                to="/login"
+              >
+                <span className="fa--sm">
+                  <i className="far fa-user-circle"></i>
+                </span>
+              </NavLink>
+            )}
           </li>
         </ul>
       </nav>
