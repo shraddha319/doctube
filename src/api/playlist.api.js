@@ -13,9 +13,9 @@ export function getPlaylist(userId, playlistId) {
 }
 
 export function updatePlaylist(userId, playlistId, playlistUpdate) {
-  return API.get(`/users/${userId}/playlists/${playlistId}`, playlistUpdate);
+  return API.post(`/users/${userId}/playlists/${playlistId}`, playlistUpdate);
 }
 
 export function deletePlaylist(userId, playlistId) {
-  return API.get(`/users/${userId}/playlists/${playlistId}`);
+  return API.delete(`/users/${userId}/playlists/${playlistId}`);
 }
