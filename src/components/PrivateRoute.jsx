@@ -9,6 +9,6 @@ export default function PrivateRoute({ path, ...props }) {
   return authToken ? (
     <Route {...props} />
   ) : (
-    <Navigate to="/login" state={{ from: path }} />
+    <Navigate replace to="/login" state={{ from: path }} />
   );
 }
