@@ -65,7 +65,7 @@ function getSearchedList(videos, searchStr) {
     return filteredDocs.filter(
       (video) =>
         video.tags.some((t) => t.toLowerCase().includes(search)) ||
-        video.genre.some((t) => t.toLowerCase().includes(search)) ||
+        video.genre.toLowerCase().includes(search) ||
         video.title.toLowerCase().includes(search)
     );
   return filteredDocs;
@@ -106,7 +106,7 @@ function parseURLParamStr(str) {
 }
 
 function isVideoInPlaylist(videoId, playlist) {
-  return playlist.videos.find((vid) => vid._id === videoId) ? true : false;
+  return playlist?.videos.find((vid) => vid._id === videoId) ? true : false;
 }
 
 export {
