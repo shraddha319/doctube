@@ -12,6 +12,8 @@ import SearchBar from './SearchBar';
 import Filter from './Filter';
 import { getVideos } from '../../api';
 
+//FIXME: filter on url - needs fixing
+
 export default function Watch() {
   const {
     data: { videos },
@@ -48,17 +50,16 @@ export default function Watch() {
     });
 
     (async () => {
-      if (videos.length > 0) return;
+      if (videos) return;
       setLoading(true);
       try {
         const {
           data: {
-            success,
             data: { videos },
           },
+          status,
         } = await getVideos();
-
-        if (success)
+        if (status === 200)
           dispatchData({ type: 'FETCH_VIDEOS', payload: { videos } });
       } catch (error) {
         if (error.response) {
@@ -108,17 +109,19 @@ export default function Watch() {
 
   return (
     <div className="Watch layout--default">
-      <SearchBar search={filter.search} dispatchFilter={dispatchFilter} />
-      <div className="watch__filter">
-        <Filter filter={filter} dispatchFilter={dispatchFilter} />
-      </div>
-      <div className="watch__videos flex--row">
-        {loading ? (
-          <Loader />
-        ) : (
-          <VideoList videos={getFilteredAndSearchedList(videos, filter)} />
-        )}
-      </div>
+      {loading || !videos ? (
+        <Loader />
+      ) : (
+        <>
+          <SearchBar search={filter.search} dispatchFilter={dispatchFilter} />
+          <div className="watch__filter">
+            <Filter filter={filter} dispatchFilter={dispatchFilter} />
+          </div>
+          <div className="watch__videos flex--row">
+            <VideoList videos={getFilteredAndSearchedList(videos, filter)} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
