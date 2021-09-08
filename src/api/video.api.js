@@ -1,5 +1,5 @@
 import API from './config.api';
 
-export async function getVideos() {
+export function getVideos() {
   return API.get('/videos');
 }
