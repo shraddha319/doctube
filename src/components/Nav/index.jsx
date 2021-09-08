@@ -1,10 +1,16 @@
 import { NavLink, Link } from 'react-router-dom';
 import './Nav.scss';
 import { ReactComponent as LogoIcon } from '../../assets/logo.svg';
-import { useAuth } from '../../context';
+import { useAuth, useData } from '../../context';
+import { LIKED_PL, WATCH_LATER_PL } from '../../utility/constants';
 
 export default function Nav({ pathname }) {
-  const { auth } = useAuth();
+  const {
+    auth: { authToken, user },
+  } = useAuth();
+  const {
+    data: { playlists },
+  } = useData();
 
   return (
     <header
@@ -43,7 +49,9 @@ export default function Nav({ pathname }) {
               end
               activeClassName="active"
               className="link flex--row"
-              to="/playlists/liked"
+              to={`/playlists/${
+                playlists?.find((pl) => pl.name === LIKED_PL)?._id
+              }`}
             >
               <span class="fa--xs">
                 <i class="far fa-thumbs-up"></i>
@@ -56,7 +64,9 @@ export default function Nav({ pathname }) {
               end
               activeClassName="active"
               className="link flex--row"
-              to="/playlists/watch-later"
+              to={`/playlists/${
+                playlists?.find((pl) => pl.name === WATCH_LATER_PL)?._id
+              }`}
             >
               <span class="fa--xs">
                 <i class="far fa-clock"></i>
@@ -70,7 +80,7 @@ export default function Nav({ pathname }) {
       <nav className="nav nav--social">
         <ul className="list--no-bullets">
           <li className="nav__item">
-            {auth?.authToken ? (
+            {authToken ? (
               <NavLink
                 end
                 activeClassName="active"
@@ -80,7 +90,7 @@ export default function Nav({ pathname }) {
                 <span className="fa--xs">
                   <i className="far fa-user-circle"></i>
                 </span>
-                <p>{auth.user.firstName}</p>
+                <p>{user.firstName}</p>
               </NavLink>
             ) : (
               <NavLink
