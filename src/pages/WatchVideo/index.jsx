@@ -3,11 +3,11 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import { DisplayCard } from '../../components';
 import { useAuth, useData } from '../../context';
-import { lowerCaseHyphenate, isVideoInPlaylist } from '../../utility/utils';
+import { isVideoInPlaylist } from '../../utility/utils';
 import { LIKED_PL, WATCH_LATER_PL } from '../../utility/constants';
 
 export default function WatchVideo() {
-  const { title } = useParams();
+  const { videoId } = useParams();
   const {
     data: { videos, playlists },
     dispatchData,
@@ -16,9 +16,7 @@ export default function WatchVideo() {
     auth: { authToken },
   } = useAuth();
 
-  const video = videos.find(
-    (video) => lowerCaseHyphenate(video.title) === title
-  );
+  const video = videos.find((video) => video._id === videoId);
   const navigate = useNavigate();
 
   const isLiked = isVideoInPlaylist(
@@ -97,7 +95,7 @@ export default function WatchVideo() {
           </span>
         </button>
         <Link
-          state={{ video: { title: video.title, _id: video._id } }}
+          state={{ videoId: video._id }}
           to={{
             search: '?action=update_playlist',
           }}
@@ -174,7 +172,7 @@ export default function WatchVideo() {
         <div className="card__body">
           <h2 className="card__body__title">{video.title}</h2>
           <div className="card__body__stats flex--row">
-            <div className="body__rating">{`IMDB ★ ${video.stats.rating.imdb}`}</div>
+            <div className="body__rating">{`IMDB ★ ${video.rating.imdb}`}</div>
             <p className="body__duration">{`${video.durationMin} min`}</p>
           </div>
           <p className="card__body__summary text--muted">{video.description}</p>

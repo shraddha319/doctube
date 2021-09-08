@@ -11,7 +11,6 @@ export default function AddToPlaylist() {
     dispatchData,
   } = useData();
   const { state } = useLocation();
-  // should include movie id
 
   function CreatePlaylist() {
     const [newPlaylist, setNewPlaylist] = useState('');
@@ -54,7 +53,7 @@ export default function AddToPlaylist() {
   }
 
   function addToPlaylistHandler(e) {
-    const video = videos.find((vid) => vid.title === state.video.title);
+    const video = videos.find((vid) => vid._id === state.videoId);
     const playlistName = e.target.name;
 
     e.target.checked
@@ -79,7 +78,7 @@ export default function AddToPlaylist() {
                 id={pl._id}
                 name={pl.name}
                 onChange={addToPlaylistHandler}
-                checked={isVideoInPlaylist(state.video._id, pl)}
+                checked={isVideoInPlaylist(state.videoId, pl)}
               />
               <label htmlFor={pl._id} name={pl.name}>
                 {pl.name}

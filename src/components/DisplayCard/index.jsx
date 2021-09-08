@@ -18,7 +18,7 @@ export default function DisplayCard({ video }) {
           <div className="card__overlay justify-center">
             <Link
               className="card__play btn btn--icon"
-              to={`/watch/${lowerCaseHyphenate(video.title)}`}
+              to={`/watch/${video._id}`}
             >
               <span className="fa--md fa--primary">
                 <i className="fas fa-play-circle"></i>
