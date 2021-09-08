@@ -11,7 +11,7 @@ export default function VideoList({ videos, limit, title, showAllLink }) {
       {showAllLink && (
         <header className="video-list__header flex--row">
           <h1 className="title title--h5">{title}</h1>
-          {showAllLink && videos.length > 0 && (
+          {videos.length > 0 && (
             <Link className="link link--hover label" to={showAllLink}>
               Show All
             </Link>
