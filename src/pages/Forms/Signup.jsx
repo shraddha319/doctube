@@ -51,7 +51,7 @@ export default function Signup() {
           dispatchAuth({ type: 'LOGIN_USER', payload: { user, authToken } });
           localStorage.setItem('authToken', authToken);
           localStorage.setItem('userId', user._id);
-          navigate('/my-list');
+          navigate('/watch');
         }
       } catch (err) {
         if (err.response) {
