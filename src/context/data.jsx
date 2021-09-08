@@ -7,8 +7,8 @@ const DataContext = createContext();
 
 export function DataProvider({ children }) {
   const [data, dispatchData] = useReducer(dataReducer, {
-    videos: [],
-    playlists: [],
+    videos: null,
+    playlists: null,
   });
   const {
     auth: { authToken, user },
