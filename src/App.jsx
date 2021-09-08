@@ -4,7 +4,7 @@ import {
   Home,
   Watch,
   WatchVideo,
-  MyList,
+  Playlists,
   NotFound,
   Login,
   Signup,
@@ -23,17 +23,19 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/watch" element={<Watch />} />
-          <Route path="/watch/:title" element={<WatchVideo />} />
-          {/* should include movie id */}
-          <PrivateRoute path="/my-list" element={<MyList />} />
-          <PrivateRoute path="/my-list/:playlistName" element={<Playlist />} />
+          <Route path="/watch/:videoId" element={<WatchVideo />} />
+          <PrivateRoute path="/playlists" element={<Playlists />} />
+          <PrivateRoute
+            path="/playlists/:playlistName"
+            element={<Playlist />}
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </ScrollToTop>
       {query.get('action') === 'update_playlist' && (
-        <PrivateRoute path="/watch/:title/" element={<AddToPlaylist />} />
+        <PrivateRoute path="/watch/:videoId/" element={<AddToPlaylist />} />
       )}
     </div>
   );
