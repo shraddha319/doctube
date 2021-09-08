@@ -48,6 +48,7 @@ export default function Watch() {
     });
 
     (async () => {
+      if (videos.length > 0) return;
       setLoading(true);
       try {
         const {
