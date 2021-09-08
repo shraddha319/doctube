@@ -16,20 +16,18 @@ function lowerCaseHyphenate(str) {
 function getFilteredList(videos, filter) {
   let filteredDocs = [...videos];
   if (filter.genre.length > 0)
-    filteredDocs = filteredDocs.filter(
-      (video) =>
-        video.genre.some((g) => filter.genre.includes(g.toLowerCase())) ||
-        video.genre.some((g) => filter.genre.includes(g.toLowerCase()))
+    filteredDocs = filteredDocs.filter((video) =>
+      filter.genre.includes(video.genre)
     );
 
   if (filter.language.length > 0)
     filteredDocs = filteredDocs.filter((video) =>
-      video.language.some((l) => filter.language.includes(l.toLowerCase()))
+      video.languages.some((l) => filter.language.includes(l.toLowerCase()))
     );
 
   if (filter.country.length > 0)
     filteredDocs = filteredDocs.filter((video) =>
-      video.country.some((c) => filter.country.includes(c))
+      video.countries.some((c) => filter.country.includes(c))
     );
 
   if (filter.year.length > 0)
@@ -39,11 +37,13 @@ function getFilteredList(videos, filter) {
 
   switch (filter.sort) {
     case 'IMDB':
-      filteredDocs.sort((a, b) => b.stats.rating.imdb - a.stats.rating.imdb);
+      filteredDocs.sort((a, b) => b.rating.imdb - a.rating.imdb);
       break;
+
     case 'RECENTLY RELEASED':
       filteredDocs.sort((a, b) => b.releaseDate.year - a.releaseDate.year);
       break;
+
     case 'NAME':
       filteredDocs.sort((a, b) => {
         let str1 = a.title.toLowerCase(),

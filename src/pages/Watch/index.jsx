@@ -71,19 +71,19 @@ export default function Watch() {
   }, []);
 
   function filterReducer(state, { type, payload }) {
-    let { filterName, value } = payload;
-
     switch (type) {
       case 'ADD_CHECKITEM_FILTER':
         return {
           ...state,
-          [filterName]: [...state[filterName], value],
+          [payload.filterName]: [...state[payload.filterName], payload.value],
         };
 
       case 'REMOVE_CHECKITEM_FILTER':
         return {
           ...state,
-          [filterName]: state[filterName].filter((elem) => elem !== value),
+          [payload.filterName]: state[payload.filterName].filter(
+            (elem) => elem !== payload.value
+          ),
         };
 
       case 'UPDATE_SORT_FILTER':
