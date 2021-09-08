@@ -36,6 +36,8 @@ export default function Login() {
 
         if (loginStatus === 200) {
           dispatchAuth({ type: 'LOGIN_USER', payload: { user, authToken } });
+          localStorage.setItem('authToken', authToken);
+          localStorage.setItem('userId', user._id);
           navigate('/my-list');
         }
       } catch (err) {
@@ -46,14 +48,13 @@ export default function Login() {
             },
             status,
           } = err.response;
-
           if (status === 400 && errors) {
             setFormError(
               errors.reduce((errObj, { message, key, type }) => {
                 return { ...errObj, [key]: message };
               }, {})
             );
-          } else if (status === 401) {
+          } else if (status > 400) {
             setFormError({
               email: '',
               password: '',

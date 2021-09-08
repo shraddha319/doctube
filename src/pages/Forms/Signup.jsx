@@ -49,6 +49,8 @@ export default function Signup() {
 
         if (signUpStatus === 201 && loginStatus === 200) {
           dispatchAuth({ type: 'LOGIN_USER', payload: { user, authToken } });
+          localStorage.setItem('authToken', authToken);
+          localStorage.setItem('userId', user._id);
           navigate('/my-list');
         }
       } catch (err) {
