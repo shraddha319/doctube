@@ -19,14 +19,18 @@ export default function WatchVideo() {
   const video = videos.find((video) => video._id === videoId);
   const navigate = useNavigate();
 
-  const isLiked = isVideoInPlaylist(
-    video._id,
-    playlists.find((pl) => pl.name === LIKED_PL)
-  );
-  const isWatchLater = isVideoInPlaylist(
-    video._id,
-    playlists.find((pl) => pl.name === WATCH_LATER_PL)
-  );
+  const isLiked =
+    authToken &&
+    isVideoInPlaylist(
+      video._id,
+      playlists.find((pl) => pl.name === LIKED_PL)
+    );
+  const isWatchLater =
+    authToken &&
+    isVideoInPlaylist(
+      video._id,
+      playlists.find((pl) => pl.name === WATCH_LATER_PL)
+    );
 
   function likeHandler() {
     isLiked
