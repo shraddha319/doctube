@@ -1,10 +1,12 @@
 import './WatchVideo.scss';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import ReactPlayer from 'react-player';
-import { DisplayCard } from '../../components';
+import { DisplayCard, Loader } from '../../components';
 import { useAuth, useData } from '../../context';
 import { isVideoInPlaylist } from '../../utility/utils';
 import { LIKED_PL, WATCH_LATER_PL } from '../../utility/constants';
+import { updatePlaylist, getVideo } from '../../api';
+import { useEffect, useState } from 'react';
 
 export default function WatchVideo() {
   const { videoId } = useParams();
@@ -13,114 +15,178 @@ export default function WatchVideo() {
     dispatchData,
   } = useData();
   const {
-    auth: { authToken },
+    auth: { authToken, user },
   } = useAuth();
+  const [video, setVideo] = useState(
+    videos?.find((video) => video._id === videoId)
+  );
+  const [loading, setLoading] = useState(false);
+  const [videoState, setVideoState] = useState({
+    liked: isVideoInPlaylist(
+      video?._id,
+      playlists?.find((pl) => pl.name === LIKED_PL)
+    ),
+    saved: isVideoInPlaylist(
+      video?._id,
+      playlists?.find((pl) => pl.name === WATCH_LATER_PL)
+    ),
+  });
 
-  const video = videos.find((video) => video._id === videoId);
   const navigate = useNavigate();
 
-  const isLiked =
-    authToken &&
-    isVideoInPlaylist(
-      video._id,
-      playlists.find((pl) => pl.name === LIKED_PL)
-    );
-  const isWatchLater =
-    authToken &&
-    isVideoInPlaylist(
-      video._id,
-      playlists.find((pl) => pl.name === WATCH_LATER_PL)
-    );
+  useEffect(() => {
+    (async () => {
+      if (video) return;
+      setLoading(true);
+      try {
+        const {
+          data: {
+            data: { video: fetchedVideo },
+          },
+          status,
+        } = await getVideo(videoId);
+        if (status === 200) setVideo(fetchedVideo);
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response);
+        }
+        console.log(error);
+      }
+      setLoading(false);
+    })();
+  }, []);
 
-  function likeHandler() {
-    isLiked
-      ? dispatchData({
-          type: 'REMOVE_FROM_PLAYLIST',
-          payload: {
-            videoId: video._id,
-            playlistName: LIKED_PL,
-          },
-        })
-      : dispatchData({
-          type: 'ADD_TO_PLAYLIST',
-          payload: {
-            video,
-            playlistName: LIKED_PL,
-          },
-        });
+  async function likeHandler() {
+    const playlistId = playlists.find((pl) => pl.name === LIKED_PL)?._id;
+    try {
+      const { status } = !videoState.liked
+        ? await updatePlaylist(user._id, playlistId, {
+            videos: [video._id],
+            type: 'add',
+          })
+        : await updatePlaylist(user._id, playlistId, {
+            videos: [video._id],
+            type: 'remove',
+          });
+      console.log(status);
+      if (status === 204) {
+        !videoState.liked
+          ? dispatchData({
+              type: 'ADD_TO_PLAYLIST',
+              payload: { video, playlistId },
+            })
+          : dispatchData({
+              type: 'REMOVE_FROM_PLAYLIST',
+              payload: { videoId: video._id, playlistId },
+            });
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err.response);
+      }
+      console.log(err);
+    } finally {
+      setVideoState({ ...videoState, liked: !videoState.liked });
+    }
   }
 
-  function watchLaterHandler() {
-    isWatchLater
-      ? dispatchData({
-          type: 'REMOVE_FROM_PLAYLIST',
-          payload: {
-            videoId: video._id,
-            playlistName: WATCH_LATER_PL,
-          },
-        })
-      : dispatchData({
-          type: 'ADD_TO_PLAYLIST',
-          payload: {
-            video,
-            playlistName: WATCH_LATER_PL,
-          },
-        });
+  async function watchLaterHandler() {
+    const playlistId = playlists.find((pl) => pl.name === WATCH_LATER_PL)?._id;
+    try {
+      const { status } = !videoState.saved
+        ? await updatePlaylist(user._id, playlistId, {
+            videos: [video._id],
+            type: 'add',
+          })
+        : await updatePlaylist(user._id, playlistId, {
+            videos: [video._id],
+            type: 'remove',
+          });
+
+      if (status === 204) {
+        !videoState.saved
+          ? dispatchData({
+              type: 'ADD_TO_PLAYLIST',
+              payload: { video, playlistId },
+            })
+          : dispatchData({
+              type: 'REMOVE_FROM_PLAYLIST',
+              payload: { videoId: video._id, playlistId },
+            });
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err.response);
+      }
+      console.log(err);
+    } finally {
+      setVideoState({ ...videoState, saved: !videoState.saved });
+    }
   }
 
   return (
     <div className="Watch-Video layout--default">
-      <div className="watch-video__player">
-        <ReactPlayer
-          url={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-          width="100%"
-          height="100%"
-        />
-      </div>
-      <div className="watch-video__buttons flex--row">
-        <button
-          className={`btn btn--icon ${
-            isLiked ? 'btn--selected' : 'btn--action'
-          }`}
-          onClick={() => (authToken ? likeHandler() : navigate('/login'))}
-        >
-          <span className="btn__icon fa--sm">
-            <i className="far fa-thumbs-up"></i>
-          </span>
-        </button>
-        <button
-          className={`btn btn--icon ${
-            isWatchLater ? 'btn--selected' : 'btn--action'
-          }`}
-          onClick={() => (authToken ? watchLaterHandler() : navigate('/login'))}
-        >
-          <span className="btn__icon fa--sm">
-            <i className="far fa-clock"></i>
-          </span>
-        </button>
-        <Link
-          state={{ videoId: video._id }}
-          to={{
-            search: '?action=update_playlist',
-          }}
-          className="btn btn--icon btn--action"
-        >
-          <span className="btn__icon fa--sm">
-            <i className="far fa-list-alt"></i>
-          </span>
-        </Link>
-      </div>
-      <div className="watch-video__info flex--row">
-        <DisplayCardHorizontal video={video} />
-        <section className="doc__suggestion">
-          <h2>You May Also Like</h2>
-          <div className="doc__suggestion__list">
-            {videos.map((video) => (
-              <DisplayCard video={video} />
-            ))}
+      {loading || !video ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="watch-video__player">
+            <ReactPlayer
+              url={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+              width="100%"
+              height="100%"
+            />
           </div>
-        </section>
-      </div>
+          <div className="watch-video__buttons flex--row">
+            <button
+              className={`btn btn--icon ${
+                videoState.liked ? 'btn--selected' : 'btn--action'
+              }`}
+              onClick={() => (authToken ? likeHandler() : navigate('/login'))}
+            >
+              <span className="btn__icon fa--sm">
+                <i className="far fa-thumbs-up"></i>
+              </span>
+            </button>
+            <button
+              className={`btn btn--icon ${
+                videoState.saved ? 'btn--selected' : 'btn--action'
+              }`}
+              onClick={() =>
+                authToken ? watchLaterHandler() : navigate('/login')
+              }
+            >
+              <span className="btn__icon fa--sm">
+                <i className="far fa-clock"></i>
+              </span>
+            </button>
+            <Link
+              state={{ videoId: video._id }}
+              to={{
+                search: '?action=update_playlist',
+              }}
+              className="btn btn--icon btn--action"
+            >
+              <span className="btn__icon fa--sm">
+                <i className="far fa-list-alt"></i>
+              </span>
+            </Link>
+          </div>
+          <div className="watch-video__info flex--row">
+            <DisplayCardHorizontal video={video} />
+            {videos && (
+              <section className="doc__suggestion">
+                <h2>You May Also Like</h2>
+                <div className="doc__suggestion__list">
+                  {videos.map((video) => (
+                    <DisplayCard video={video} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -144,7 +210,7 @@ export default function WatchVideo() {
     }
 
     function datePadZero(value) {
-      return value.toString().length === 1 ? '0' + value.toString() : value;
+      return value?.toString().length === 1 ? '0' + value.toString() : value;
     }
 
     function SpecsTable({ specsObj }) {
