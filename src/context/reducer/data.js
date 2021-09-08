@@ -5,6 +5,9 @@ export default function dataReducer(state, { type, payload }) {
     case 'FETCH_VIDEOS':
       return { ...state, videos: payload.videos };
 
+    case 'FETCH_PLAYLISTS':
+      return { ...state, playlists: payload.playlists };
+
     case 'ADD_TO_PLAYLIST':
       return {
         ...state,
