@@ -1,5 +1,5 @@
 import API from './config.api';
-import { getVideos } from './video.api';
+import { getVideos, getVideo } from './video.api';
 import { signUpUser, loginUser, getUser } from './user.api';
 import {
   createPlaylist,
@@ -12,6 +12,7 @@ import {
 export {
   API,
   getVideos,
+  getVideo,
   signUpUser,
   loginUser,
   getUser,
