@@ -7,11 +7,11 @@ import { DataProvider, AuthProvider } from './context';
 ReactDOM.render(
   <StrictMode>
     <Router>
-      <DataProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <DataProvider>
           <App />
-        </AuthProvider>
-      </DataProvider>
+        </DataProvider>
+      </AuthProvider>
     </Router>
   </StrictMode>,
   document.getElementById('root')
