@@ -7,6 +7,12 @@ export default function authReducer(state, { type, payload }) {
         authToken: payload.authToken,
       };
 
+    case 'SET_USER':
+      return { ...state, user: payload.user };
+
+    case 'SET_TOKEN':
+      return { ...state, authToken: payload.authToken };
+
     default:
       return state;
   }
