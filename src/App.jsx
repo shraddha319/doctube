@@ -26,7 +26,7 @@ export default function App() {
           <Route path="/watch/:videoId" element={<WatchVideo />} />
           <PrivateRoute path="/playlists" element={<Playlists />} />
           <PrivateRoute
-            path="/playlists/:playlistName"
+            path="/playlists/:playlistId"
             element={<Playlist />}
           />
           <Route path="/login" element={<Login />} />
