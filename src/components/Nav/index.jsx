@@ -44,7 +44,7 @@ export default function Nav({ pathname }) {
               Playlists
             </NavLink>
           </li>
-          <li className="nav__item">
+          {/* <li className="nav__item">
             <NavLink
               end
               activeClassName="active"
@@ -73,7 +73,7 @@ export default function Nav({ pathname }) {
               </span>
               <p>Saved</p>
             </NavLink>
-          </li>
+          </li> */}
         </ul>
       </nav>
 
