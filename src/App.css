@@ -1,11 +1,25 @@
-@import './layout.css';
-
 .App,
-#root {
+#root,
+.main {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.layout--default {
+  margin: 0 auto;
+  margin-top: 110px;
+  height: 100%;
+  width: 75%;
+}
+
+.layout--center {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 :root {
