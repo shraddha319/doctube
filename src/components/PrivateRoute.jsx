@@ -1,12 +1,12 @@
-import { useAuth } from '../context';
+import { useAuth } from '../contexts';
 import { Navigate, Route } from 'react-router-dom';
 
 export default function PrivateRoute({ path, ...props }) {
   const {
-    auth: { authToken },
+    auth: { token },
   } = useAuth();
 
-  return authToken ? (
+  return token ? (
     <Route {...props} />
   ) : (
     <Navigate replace to="/login" state={{ from: path }} />
