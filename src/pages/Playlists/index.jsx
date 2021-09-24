@@ -1,103 +1,85 @@
 import './Playlists.scss';
-import { useData, useAuth } from '../../context';
-import { VideoList, Loader } from '../../components';
-import { LIKED_PL, WATCH_LATER_PL } from '../../utility/constants';
+import { VideoList, Loader, ButtonLoader } from '../../components';
+import { LIKED_PL, WATCH_LATER_PL } from '../../constants';
 import { useEffect, useState } from 'react';
-import { getPlaylists, deletePlaylist } from '../../api';
+import { useUser, useToast } from '../../contexts';
+import { getPlaylists, removePlaylist } from '../../contexts/user/services';
+import { RemovePlaylistIcon } from '../../assets/icons';
 
 export default function Playlists() {
   const {
-    data: { playlists },
-    dispatchData,
-  } = useData();
-  const {
-    auth: { user },
-  } = useAuth();
-  const [loading, setLoading] = useState({
-    fetch: false,
-    remove: false,
-    removeId: null,
-  });
+    user: {
+      playlists: { status, lists: playlists, error },
+      profile: { _id: userId },
+    },
+    dispatchUser,
+  } = useUser();
 
-  async function removePlaylistHandler(playlistId) {
-    try {
-      setLoading({ ...loading, remove: true, removeId: playlistId });
-      const { status } = await deletePlaylist(user._id, playlistId);
-      if (status === 204)
-        dispatchData({
-          type: 'REMOVE_PLAYLIST',
-          payload: { playlistId },
-        });
-    } catch (err) {
-      if (err.response) {
-        console.log(err.response);
-      }
-      console.log(err);
-    } finally {
-      setLoading({ ...loading, remove: false, removeId: null });
-    }
+  function Playlist({ playlist }) {
+    const [loading, setLoading] = useState(false);
+    const { dispatchToast } = useToast();
+    const {
+      user: {
+        profile: { _id: userId },
+      },
+      dispatchUser,
+    } = useUser();
+
+    const deletePlaylistHandler = async (playlistId, playlistName) => {
+      setLoading(true);
+      await removePlaylist(dispatchUser, userId, playlistId);
+      setLoading(false);
+      dispatchToast({
+        type: 'TRIGGER_TOAST',
+        payload: {
+          type: 'success',
+          body: `Playlist '${playlistName}' has been deleted`,
+        },
+      });
+    };
+
+    return (
+      <section className="playlist">
+        {![LIKED_PL, WATCH_LATER_PL].includes(playlist.name) &&
+          (loading ? (
+            <ButtonLoader />
+          ) : (
+            <button
+              className="btn btn--icon"
+              onClick={() => deletePlaylistHandler(playlist._id, playlist.name)}
+            >
+              <span className="fa--sm fa--hover">
+                <RemovePlaylistIcon />
+              </span>
+            </button>
+          ))}
+        <VideoList
+          limit={5}
+          videos={playlist.videos}
+          title={playlist.name}
+          showAllLink={`${playlist._id}`}
+        />
+      </section>
+    );
   }
 
   useEffect(() => {
-    (async () => {
-      if (playlists) return;
-      setLoading({ ...loading, fetch: true });
-      try {
-        const {
-          data: {
-            success,
-            data: { playlists },
-          },
-        } = await getPlaylists(user._id);
+    if (status === 'idle') {
+      getPlaylists(dispatchUser, userId);
+    }
 
-        if (success)
-          dispatchData({
-            type: 'FETCH_PLAYLISTS',
-            payload: {
-              playlists: playlists.map((pl) =>
-                (({ name, videos }) => ({ name, videos }))(pl)
-              ),
-            },
-          });
-      } catch (error) {
-        if (error.response) {
-          console.log(error.response);
-        }
-        console.log(error);
-      }
-      setLoading({ ...loading, fetch: false });
-    })();
+    if (status === 'failed') {
+      console.log(error);
+    }
   }, []);
 
-  return (
+  return status === 'loading' ? (
+    <Loader />
+  ) : (
     <div className="Playlists layout--default">
-      {loading.fetch || !playlists ? (
-        <Loader />
-      ) : (
-        playlists.map((pl) => (
-          <section className="playlist">
-            {![LIKED_PL, WATCH_LATER_PL].includes(pl.name) &&
-              (loading.remove && loading.removeId === pl._id ? (
-                <Loader />
-              ) : (
-                <button
-                  className="btn btn--icon btn--action"
-                  onClick={() => removePlaylistHandler(pl._id)}
-                >
-                  <span className="btn__icon fa--sm">
-                    <i class="fas fa-times"></i>
-                  </span>
-                </button>
-              ))}
-            <VideoList
-              limit={5}
-              videos={pl.videos}
-              title={pl.name}
-              showAllLink={`${pl._id}`}
-            />
-          </section>
-        ))
-      )}
+      {playlists.map((pl) => (
+        <Playlist playlist={pl} />
+      ))}
     </div>
   );
 }

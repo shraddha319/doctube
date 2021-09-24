@@ -1,10 +1,8 @@
 import './Form.scss';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { loginValidationRules, validate } from '../../utility';
-import { loginUser } from '../../api';
-import { Loader } from '../../components';
-import { useAuth } from '../../context';
+import { useState, useEffect } from 'react';
+import { loginValidationRules, validate } from '../../validations';
+import { useAuth, useUser } from '../../contexts';
 
 export default function Login() {
   const [input, setInput] = useState({
@@ -16,60 +14,49 @@ export default function Login() {
     email: '',
     password: '',
   });
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { dispatchAuth } = useAuth();
+  const {
+    auth: { status, error },
+    loginUser,
+    dispatchAuth,
+  } = useAuth();
+  const { dispatchUser } = useUser();
 
-  async function loginHandler() {
+  useEffect(() => {
+    if (status === 'failed' && !error) {
+      setFormError({
+        email: '',
+        password: '',
+        login: 'Invalid email/password.',
+      });
+    } else if (status === 'success') {
+      navigate('/watch');
+    }
+  }, [status, navigate]);
+
+  function loginHandler() {
     const validationError = validate(input, loginValidationRules);
     setFormError({ ...formError, ...validationError });
 
     if (Object.keys(validationError).length === 0) {
-      setLoading(true);
-      try {
-        const {
-          data: {
-            data: { user, authToken },
-          },
-          status: loginStatus,
-        } = await loginUser(input);
-
-        if (loginStatus === 200) {
-          dispatchAuth({ type: 'LOGIN_USER', payload: { user, authToken } });
-          localStorage.setItem('authToken', authToken);
-          localStorage.setItem('userId', user._id);
-          navigate('/watch');
-        }
-      } catch (err) {
-        if (err.response) {
-          const {
-            data: {
-              error: { code, errors },
-            },
-            status,
-          } = err.response;
-          if (status === 400 && errors) {
-            setFormError(
-              errors.reduce((errObj, { message, key, type }) => {
-                return { ...errObj, [key]: message };
-              }, {})
-            );
-          } else if (status > 400) {
-            setFormError({
-              email: '',
-              password: '',
-              login: 'Incorrect username/password',
-            });
-          }
-        }
-      } finally {
-        setLoading(false);
-      }
+      const credentials = (({ email, password }) => ({ email, password }))(
+        input
+      );
+      loginUser(dispatchAuth, dispatchUser, credentials);
     }
   }
 
+  function testLoginHandler() {
+    const credentials = {
+      email: process.env.REACT_APP_TEST_EMAIL,
+      password: process.env.REACT_APP_TEST_PASSWORD,
+    };
+    console.log({ env: process.env, credentials });
+    loginUser(dispatchAuth, dispatchUser, credentials);
+  }
+
   return (
-    <div className="form--login layout--default justify-center">
+    <div className="form--login layout--center">
       <div className="form__container">
         <div className="form__header">
           <p className="text text--md text--primary">Login In</p>
@@ -112,10 +99,18 @@ export default function Login() {
             type="submit"
             onClick={loginHandler}
           >
-            {loading ? <Loader /> : 'Login'}
+            {status === 'loading' ? 'Loading...' : 'Login'}
           </button>
         </form>
         <div className="form__footer">
+          <p>
+            <button
+              onClick={testLoginHandler}
+              className="btn btn--action btn--sm"
+            >
+              Test Login
+            </button>
+          </p>
           <p>
             New to DocTube?{' '}
             <Link to="/signup" className="link link--hover">

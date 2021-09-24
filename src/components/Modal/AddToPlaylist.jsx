@@ -1,59 +1,49 @@
 import Modal from '.';
 import './Modal.scss';
-import { useData, useAuth } from '../../context';
+import { useUser, useVideos, useToast } from '../../contexts';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { isVideoInPlaylist } from '../../utility/utils';
 import {
-  createPlaylist,
-  updatePlaylist,
-  getVideos,
   getPlaylists,
-} from '../../api';
+  createPlaylist,
+  addToPlaylist,
+  removeFromPlaylist,
+} from '../../contexts/user/services';
 import Loader from '../Loader';
+import ButtonLoader from '../Loader/ButtonLoader';
 
 export default function AddToPlaylist() {
   const {
-    data: { playlists, videos },
-    dispatchData,
-  } = useData();
+    user: {
+      playlists: { lists: playlists, status },
+      profile,
+    },
+    dispatchUser,
+  } = useUser();
   const {
-    auth: { user },
-  } = useAuth();
+    videos: { videos },
+  } = useVideos();
   const { state } = useLocation();
-  const [loading, setLoading] = useState({
-    update: false,
-    fetch: false,
-  });
+  const { dispatchToast } = useToast();
+
+  const isVideoInPlaylist = (videoId, playlist) => {
+    return playlist.videos.findIndex(({ _id }) => _id === videoId) === -1
+      ? false
+      : true;
+  };
 
   function CreatePlaylist() {
     const [newPlaylistName, setNewPlaylistName] = useState('');
     const [loading, setLoading] = useState(false);
+    const {
+      dispatchUser,
+      user: { profile },
+    } = useUser();
 
     async function createPlaylistHandler() {
       setLoading(true);
-      try {
-        const {
-          data: {
-            data: { playlist },
-          },
-          status,
-        } = await createPlaylist(user._id, {
-          name: newPlaylistName,
-          videos: [],
-        });
-
-        if (status === 201) {
-          dispatchData({ type: 'CREATE_PLAYLIST', payload: { playlist } });
-        }
-      } catch (err) {
-        if (err.response) {
-          console.log(err.response);
-        }
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
+      await createPlaylist(dispatchUser, profile?._id, newPlaylistName);
+      setLoading(false);
     }
 
     return (
@@ -67,7 +57,7 @@ export default function AddToPlaylist() {
           onChange={(e) => setNewPlaylistName(e.target.value)}
         />
         {loading ? (
-          <Loader />
+          <ButtonLoader />
         ) : (
           <button
             className="btn btn--icon btn--action"
@@ -82,109 +72,74 @@ export default function AddToPlaylist() {
     );
   }
 
-  async function updatePlaylistHandler(e) {
-    const video = videos.find((vid) => vid._id === state.videoId);
-    const playlistId = e.target.id;
-
-    try {
-      setLoading(true);
-      const apiType = !e.target.checked ? 'add' : 'remove';
-      const { status } = await updatePlaylist(user._id, playlistId, {
-        videos: [video._id],
-        type: apiType,
-      });
-
-      console.log(status);
-      if (status === 204) {
-        !e.target.checked
-          ? dispatchData({
-              type: 'ADD_TO_PLAYLIST',
-              payload: { video, playlistId },
-            })
-          : dispatchData({
-              type: 'REMOVE_FROM_PLAYLIST',
-              payload: { videoId: video._id, playlistId },
-            });
-      }
-    } catch (err) {
-      if (err.response) {
-        console.log(err.response);
-      }
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    (async () => {
-      if (videos) return;
-      setLoading({ ...loading, fetch: true });
-      try {
-        const {
-          data: {
-            data: { videos },
-          },
-          videoStatus,
-        } = await getVideos();
-
-        const {
-          data: {
-            data: { playlists },
-            plStatus,
-          },
-        } = await getPlaylists(user._id);
-
-        if (videoStatus === 200)
-          dispatchData({ type: 'FETCH_VIDEOS', payload: { videos } });
-        if (plStatus === 200)
-          dispatchData({
-            type: 'FETCH_PLAYLISTS',
-            payload: {
-              playlists: playlists.map((pl) =>
-                (({ name, videos }) => ({ name, videos }))(pl)
-              ),
-            },
-          });
-      } catch (error) {
-        if (error.response) {
-          console.log(error.response);
-        }
-        console.log(error);
-      }
-      setLoading({ ...loading, fetch: false });
-    })();
+    if (status === 'idle') getPlaylists(dispatchUser, profile?._id);
   }, []);
 
-  return (
+  function PlaylistCheckbox({ playlist }) {
+    const [loading, setLoading] = useState(false);
+
+    async function updatePlaylistHandler(e, playlist) {
+      const video = videos.find((vid) => vid._id === state.videoId);
+      const playlistId = e.target.id;
+      const inPlaylist = isVideoInPlaylist(state.videoId, playlist);
+
+      setLoading(true);
+      !inPlaylist
+        ? await addToPlaylist(dispatchUser, profile?._id, playlistId, video)
+        : await removeFromPlaylist(
+            dispatchUser,
+            profile?._id,
+            playlistId,
+            video._id
+          );
+      setLoading(false);
+      dispatchToast({
+        type: 'TRIGGER_TOAST',
+        payload: {
+          type: 'success',
+          body: `${video.title} has been ${
+            inPlaylist ? 'removed from' : 'added to'
+          } ${playlist.name} list`,
+        },
+      });
+    }
+
+    return (
+      <div className="input--checkbox">
+        {loading ? (
+          <ButtonLoader />
+        ) : (
+          <>
+            <input
+              type="checkbox"
+              id={playlist._id}
+              name={playlist.name}
+              value={isVideoInPlaylist(state.videoId, playlist)}
+              onChange={(e) => updatePlaylistHandler(e, playlist)}
+              checked={isVideoInPlaylist(state.videoId, playlist)}
+            />
+            <label htmlFor={playlist._id} name={playlist.name}>
+              {playlist.name}
+            </label>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return !profile && status === 'loading' ? (
+    <Loader />
+  ) : (
     <Modal title="Add to...">
-      {loading.fetch || !playlists ? (
-        <Loader />
-      ) : (
-        <div className="playlists--add">
-          <div className="playlists--current">
-            {loading.update ? (
-              <Loader />
-            ) : (
-              playlists.map((pl) => (
-                <div className="input--checkbox">
-                  <input
-                    type="checkbox"
-                    id={pl._id}
-                    name={pl.name}
-                    onChange={updatePlaylistHandler}
-                    checked={isVideoInPlaylist(state.videoId, pl)}
-                  />
-                  <label htmlFor={pl._id} name={pl.name}>
-                    {pl.name}
-                  </label>
-                </div>
-              ))
-            )}
-          </div>
-          <CreatePlaylist />
+      <div className="playlists--add">
+        <div className="playlists--current">
+          {playlists.map((pl) => (
+            <PlaylistCheckbox playlist={pl} />
+          ))}
         </div>
-      )}
+        <CreatePlaylist />
+      </div>
     </Modal>
   );
 }

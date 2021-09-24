@@ -1,10 +1,8 @@
 import './Form.scss';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { registerValidationRules, validate } from '../../utility';
-import { signUpUser, loginUser } from '../../api';
-import { Loader } from '../../components';
-import { useAuth } from '../../context';
+import { useState, useEffect } from 'react';
+import { signupValidationRules, validate } from '../../validations';
+import { useAuth, useUser } from '../../contexts';
 
 export default function Signup() {
   const [input, setInput] = useState({
@@ -21,63 +19,46 @@ export default function Signup() {
     password: '',
     confirmPassword: '',
   });
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { dispatchAuth } = useAuth();
+  const {
+    auth: { status, error },
+    dispatchAuth,
+    signUpUser,
+  } = useAuth();
+  const { dispatchUser } = useUser();
+
+  useEffect(() => {
+    if (status === 'failed' && error && error.statusCode === 400) {
+      console.log(error);
+      setFormError(
+        error.errors.reduce((errObj, { message, key, type }) => {
+          return { ...errObj, [key]: message };
+        }, {})
+      );
+    }
+
+    if (status === 'success') navigate('/watch');
+  }, [status, navigate, error]);
 
   async function signupHandler() {
-    const errors = validate(input, registerValidationRules);
-    setFormError(errors);
+    const validationError = validate(input, signupValidationRules);
+    setFormError({ ...formError, ...validationError });
 
-    if (Object.keys(errors).length === 0) {
-      setLoading(true);
-      try {
-        const reqBody = (({ email, firstName, lastName, password }) => ({
-          email,
-          firstName,
-          lastName,
-          password,
-        }))(input);
+    if (Object.keys(validationError).length === 0) {
+      const reqBody = (({ email, firstName, password }) => ({
+        email,
+        firstName,
+        password,
+      }))(input);
 
-        const { status: signUpStatus } = await signUpUser(reqBody);
-        const {
-          data: {
-            data: { user, authToken },
-          },
-          status: loginStatus,
-        } = await loginUser({ email: input.email, password: input.password });
+      if (input.lastName !== '') reqBody.lastName = input.lastName;
 
-        if (signUpStatus === 201 && loginStatus === 200) {
-          dispatchAuth({ type: 'LOGIN_USER', payload: { user, authToken } });
-          localStorage.setItem('authToken', authToken);
-          localStorage.setItem('userId', user._id);
-          navigate('/watch');
-        }
-      } catch (err) {
-        if (err.response) {
-          const {
-            data: {
-              error: { code, errors },
-            },
-            status,
-          } = err.response;
-
-          if (status === 400 && errors) {
-            setFormError(
-              errors.reduce((errObj, { message, key, type }) => {
-                return { ...errObj, [key]: message };
-              }, {})
-            );
-          }
-        }
-      } finally {
-        setLoading(false);
-      }
+      signUpUser(dispatchAuth, dispatchUser, reqBody);
     }
   }
 
   return (
-    <div className="form--signup layout--default justify-center">
+    <div className="form--signup layout--center">
       <div className="form__container">
         <div className="form__header">
           <p className="text text--md text--primary">Sign Up</p>
@@ -164,7 +145,7 @@ export default function Signup() {
             type="submit"
             onClick={signupHandler}
           >
-            {loading ? <Loader /> : 'Register'}
+            {status === 'loading' ? 'Loading...' : 'Register'}
           </button>
         </form>
         <div className="form__footer">

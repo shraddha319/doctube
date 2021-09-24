@@ -1,106 +1,100 @@
 import './Playlist.scss';
 import { useParams } from 'react-router-dom';
-import { useData, useAuth } from '../../context';
-import { DisplayCard, EmptyList, Loader } from '../../components';
+import { DisplayCard, EmptyList, Loader, ButtonLoader } from '../../components';
 import { useState, useEffect } from 'react';
-import { updatePlaylist, getPlaylists } from '../../api';
+import { useUser, useToast } from '../../contexts';
+import { getPlaylist } from '../../api';
+import { removeFromPlaylist } from '../../contexts/user/services';
+import { TrashBinIcon } from '../../assets/icons';
 
-export default function Playlist() {
-  const { playlistId } = useParams();
-  const {
-    data: { playlists },
-    dispatchData,
-  } = useData();
-  const {
-    auth: { user },
-  } = useAuth();
-  const [loading, setLoading] = useState({
-    fetch: false,
-    remove: false,
-  });
-  const playlist = playlists?.find((pl) => pl._id === playlistId);
+export default function Playlist(props) {
+  const params = useParams();
+  const playlistId = params?.playlistId || props?.playlistId;
 
-  async function removeFromPlaylistHandler(videoId) {
-    try {
-      setLoading({ ...loading, remove: true });
-      const { status } = await updatePlaylist(user._id, playlistId, {
-        videos: [videoId],
-        type: 'remove',
+  const {
+    user: {
+      profile: { _id: userId },
+      playlists: { lists: playlists },
+    },
+  } = useUser();
+  const [loading, setLoading] = useState(false);
+  let playlist = playlists?.find((pl) => pl._id === playlistId);
+
+  function PlaylistVideo({ video, playlistId }) {
+    const [loading, setLoading] = useState(false);
+    const {
+      user: {
+        profile: { _id: userId },
+      },
+      dispatchUser,
+    } = useUser();
+    const { dispatchToast } = useToast();
+
+    async function removeFromPlaylistHandler(videoId, videoName) {
+      setLoading(true);
+      await removeFromPlaylist(dispatchUser, userId, playlistId, videoId);
+      setLoading(false);
+      dispatchToast({
+        type: 'TRIGGER_TOAST',
+        payload: {
+          type: 'success',
+          body: `${videoName} has been removed from ${playlist.name} list`,
+        },
       });
-
-      if (status === 204)
-        dispatchData({
-          type: 'REMOVE_FROM_PLAYLIST',
-          payload: { playlistId, videoId },
-        });
-    } catch (err) {
-      if (err.response) {
-        console.log(err.response);
-      }
-      console.log(err);
-    } finally {
-      setLoading({ ...loading, remove: false });
     }
+
+    return (
+      <div className="playlist__video">
+        <DisplayCard video={video} />
+        {loading ? (
+          <ButtonLoader />
+        ) : (
+          <button
+            className="btn btn--icon btn--action"
+            onClick={() => removeFromPlaylistHandler(video._id, video.title)}
+          >
+            <span className="fa--sm fa--hover">
+              <TrashBinIcon />
+            </span>
+          </button>
+        )}
+      </div>
+    );
   }
 
   useEffect(() => {
     (async () => {
-      if (playlists) return;
-      setLoading({ ...loading, fetch: true });
+      if (playlist) return;
       try {
+        setLoading(true);
         const {
           data: {
-            success,
-            data: { playlists },
+            data: { playlist: fetchedList },
           },
-        } = await getPlaylists(user._id);
-
-        if (success)
-          dispatchData({
-            type: 'FETCH_PLAYLISTS',
-            payload: {
-              playlists: playlists.map((pl) =>
-                (({ name, videos }) => ({ name, videos }))(pl)
-              ),
-            },
-          });
+          status,
+        } = await getPlaylist(userId, playlistId);
+        if (status === 200) playlist = fetchedList;
       } catch (error) {
-        if (error.response) {
-          console.log(error.response);
-        }
         console.log(error);
+      } finally {
+        setLoading(false);
       }
-      setLoading({ ...loading, fetch: false });
     })();
   }, []);
 
-  return (
+  return loading || !playlist ? (
+    <Loader />
+  ) : (
     <div className="layout--default playlist">
-      {loading.fetch || !playlist ? (
-        <Loader />
-      ) : (
-        <>
-          <header className="flex--row">
-            <h1 className="title title--h5">{playlist.name}</h1>
-          </header>
-          <section className="playlist__videos">
-            {playlist.videos.map((video) => (
-              <div className="playlist__video">
-                <DisplayCard video={video} />
-                <button
-                  className="btn btn--icon btn--action"
-                  onClick={() => removeFromPlaylistHandler(video._id)}
-                >
-                  <span className="btn__icon fa--sm">
-                    <i class="far fa-trash-alt"></i>
-                  </span>
-                </button>
-              </div>
-            ))}
-            {playlist.videos.length === 0 && <EmptyList />}
-          </section>
-        </>
-      )}
+      <header className="flex--row">
+        <h1 className="title title--h5">{playlist.name}</h1>
+      </header>
+      <section className="playlist__videos">
+        {playlist.videos.map((video) => (
+          <PlaylistVideo playlistId={playlistId} video={video} />
+        ))}
+        {playlist.videos.length === 0 && <EmptyList />}
+      </section>
     </div>
   );
 }
