@@ -2,7 +2,7 @@ import './DisplayCard.scss';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { lowerCaseHyphenate } from '../../utility/utils';
+import { lowerCaseHyphenate } from '../../utility';
 
 export default function DisplayCard({ video }) {
   const [cardHover, setCardHover] = useState(false);

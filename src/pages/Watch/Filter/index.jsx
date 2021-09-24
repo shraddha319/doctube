@@ -1,5 +1,5 @@
 import './Filter.scss';
-import { capitalizeString } from '../../../utility/utils';
+import { capitalizeString } from '../../../utility';
 import { useState } from 'react';
 
 export default function Filter({ filter, dispatchFilter }) {

@@ -6,6 +6,7 @@ import Playlist from './Playlist';
 import NotFound from './NotFound';
 import Login from './Forms/Login';
 import Signup from './Forms/Signup';
+import EditProfile from './Forms/EditProfile';
 
 export {
   Home,
@@ -16,4 +17,5 @@ export {
   Login,
   Signup,
   Playlist,
+  EditProfile,
 };
