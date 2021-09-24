@@ -7,7 +7,7 @@ const {
   LETTERS_ONLY,
 } = formError;
 
-export const registerValidationRules = {
+export const signupValidationRules = {
   firstName: {
     required: true,
     format: {
