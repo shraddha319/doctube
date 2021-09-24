@@ -1,6 +1,6 @@
 import API from './config.api';
 import { getVideos, getVideo } from './video.api';
-import { signUpUser, loginUser, getUser } from './user.api';
+import { signUpUser, loginUser, getUser } from './auth.api';
 import {
   createPlaylist,
   getPlaylists,
