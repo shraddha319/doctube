@@ -1,7 +1,6 @@
 import './Home.scss';
 import './Carousel.scss';
 import bgVideo from '../../assets/home/our_planet_tiger.mp4';
-// import bgVideo from "../../assets/home/our_planet.mp4";
 import netflixLogo from '../../assets/home/Netflix_logo.svg';
 
 import { Link } from 'react-router-dom';
