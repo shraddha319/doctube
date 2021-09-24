@@ -2,16 +2,25 @@ import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './App';
-import { DataProvider, AuthProvider } from './context';
+import {
+  UserProvider,
+  ToastProvider,
+  VideosProvider,
+  AuthProvider,
+} from './contexts';
 
 ReactDOM.render(
   <StrictMode>
     <Router>
-      <AuthProvider>
-        <DataProvider>
-          <App />
-        </DataProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <VideosProvider>
+          <UserProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </UserProvider>
+        </VideosProvider>
+      </ToastProvider>
     </Router>
   </StrictMode>,
   document.getElementById('root')
