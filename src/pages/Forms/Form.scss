@@ -1,5 +1,6 @@
 .form--signup,
-.form--login {
+.form--login,
+.form--edit-profile {
   font-size: 0.8rem;
 
   .form__container {
@@ -37,6 +38,10 @@
       width: 100%;
       border: 1px solid var(--clr-gray-light);
       border-radius: 10px;
+
+      & > * {
+        margin-top: 0.5rem;
+      }
     }
   }
 
