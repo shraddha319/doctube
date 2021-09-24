@@ -1,24 +1,25 @@
 import './Watch.scss';
 import { VideoList, Loader } from '../../components';
-import { useData } from '../../context';
 import {
   getFilteredAndSearchedList,
   stringifyFilterObj,
   parseURLParamStr,
-} from '../../utility/utils';
-import { useEffect, useReducer, useState } from 'react';
+} from '../../utility';
+import { useEffect, useReducer } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import Filter from './Filter';
-import { getVideos } from '../../api';
+import { useVideos } from '../../contexts';
 
 //FIXME: filter on url - needs fixing
 
 export default function Watch() {
   const {
-    data: { videos },
-    dispatchData,
-  } = useData();
+    videos: { videos, status },
+    dispatchVideos,
+    fetchVideos,
+  } = useVideos();
+
   const initFilter = {
     genre: [],
     year: [],
@@ -28,7 +29,6 @@ export default function Watch() {
     search: '',
   };
   const [filter, dispatchFilter] = useReducer(filterReducer, initFilter);
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -42,33 +42,13 @@ export default function Watch() {
   }, [filter]);
 
   useEffect(() => {
-    let UrlParamObj = search ? parseURLParamStr(search) : null;
+    if (status === 'idle') fetchVideos(dispatchVideos);
 
+    let UrlParamObj = search ? parseURLParamStr(search) : null;
     dispatchFilter({
       type: 'INITIALISE_FILTER',
       payload: { filter: UrlParamObj },
     });
-
-    (async () => {
-      if (videos) return;
-      setLoading(true);
-      try {
-        const {
-          data: {
-            data: { videos },
-          },
-          status,
-        } = await getVideos();
-        if (status === 200)
-          dispatchData({ type: 'FETCH_VIDEOS', payload: { videos } });
-      } catch (error) {
-        if (error.response) {
-          console.log(error.response);
-        }
-        console.log(error);
-      }
-      setLoading(false);
-    })();
   }, []);
 
   function filterReducer(state, { type, payload }) {
@@ -109,7 +89,7 @@ export default function Watch() {
 
   return (
     <div className="Watch layout--default">
-      {loading || !videos ? (
+      {status === 'idle' || status === 'loading' ? (
         <Loader />
       ) : (
         <>
