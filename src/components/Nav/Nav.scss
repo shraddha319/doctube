@@ -8,6 +8,19 @@
 }
 
 .header {
+  .header__brand .link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    & > p {
+      font-weight: 300;
+      font-size: 1.4rem;
+      color: white;
+      margin-left: 10px;
+    }
+  }
+
   .nav__item {
     margin: 0.8rem 1rem 0.5rem;
 

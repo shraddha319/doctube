@@ -2,7 +2,6 @@ import { NavLink, Link } from 'react-router-dom';
 import './Nav.scss';
 import { ReactComponent as LogoIcon } from '../../assets/logo.svg';
 import { useAuth, useUser } from '../../contexts';
-import { PlaylistIcon, HeartSolid, ClockSolid } from '../../assets/icons';
 
 export default function Nav({ pathname }) {
   const {
@@ -26,7 +25,8 @@ export default function Nav({ pathname }) {
 
       <div className="header__brand brand">
         <Link className="link" to="/">
-          <LogoIcon className="icon--lg" fill="#fff" />
+          <LogoIcon className="icon--md" fill="#fff" />
+          <p>DocTube</p>
         </Link>
       </div>
 
