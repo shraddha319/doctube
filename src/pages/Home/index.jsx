@@ -25,11 +25,11 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      <div className="carousel justify-center">
+      {/* <div className="carousel justify-center">
         <div className="option option-1 active"></div>
         <div className="option option-2"></div>
         <div className="option option-3"></div>
-      </div>
+      </div> */}
     </div>
   );
 }
