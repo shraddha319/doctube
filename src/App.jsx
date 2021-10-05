@@ -61,7 +61,7 @@ export default function App() {
                 }
               />
               <PrivateRoute
-                path="/playlists/saved"
+                path="/playlists/watch-later"
                 element={
                   <Playlist
                     playlistId={

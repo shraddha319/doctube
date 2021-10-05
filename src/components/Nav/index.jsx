@@ -68,12 +68,12 @@ export default function Nav({ pathname }) {
                 end
                 activeClassName="active"
                 className="link flex--row"
-                to="/playlists/saved"
+                to="/playlists/watch-later"
               >
                 <span class="fa--xs">
                   <i class="far fa-clock"></i>
                 </span>
-                <p>Saved</p>
+                <p>Watch Later</p>
               </NavLink>
             )}
           </li>
