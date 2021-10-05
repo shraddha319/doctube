@@ -8,6 +8,7 @@ import {
   updatePlaylist,
   deletePlaylist,
 } from './playlist.api';
+import { updateUser } from './user.api';
 
 export {
   API,
@@ -21,4 +22,5 @@ export {
   getPlaylist,
   updatePlaylist,
   deletePlaylist,
+  updateUser,
 };

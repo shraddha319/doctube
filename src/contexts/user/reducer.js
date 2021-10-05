@@ -103,6 +103,17 @@ export const userReducer = (state, action) => {
         },
       };
 
+    case 'UPDATE_PROFILE':
+      /**
+       * payload: {update}
+       */
+      return {
+        ...state,
+        profile: state.profile
+          ? { ...state.profile, ...action.payload.update }
+          : state.profile,
+      };
+
     case 'LOGOUT_USER':
       return {
         profile: null,
