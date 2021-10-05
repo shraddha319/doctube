@@ -126,6 +126,11 @@
   align-items: center;
 }
 
+.icon--md {
+  width: 2rem;
+  height: 2rem;
+}
+
 .icon--lg {
   width: 2.5rem;
   height: 2.5rem;
