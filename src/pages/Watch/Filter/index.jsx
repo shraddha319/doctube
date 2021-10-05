@@ -1,6 +1,6 @@
 import './Filter.scss';
 import { capitalizeString } from '../../../utility';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Filter({ filter, dispatchFilter }) {
   const filterData = {
@@ -88,13 +88,7 @@ export default function Filter({ filter, dispatchFilter }) {
 
     return (
       <button
-        onClick={() =>
-          setShowOptions(
-            showOptions.name === name
-              ? { ...setShowOptions, show: false }
-              : { name: name, show: true }
-          )
-        }
+        onClick={() => setShowOptions({ name, show: true })}
         class="filter__btn btn btn--icon--left btn--gray btn--round btn--xs"
       >
         <span class="btn__icon fa--xs">
@@ -171,8 +165,31 @@ export default function Filter({ filter, dispatchFilter }) {
   }
 
   function FilterOptions({ name, type, options }) {
+    function useOutsideAlerter(ref) {
+      useEffect(() => {
+        /**
+         * if clicked on outside of element
+         */
+        function handleClickOutside(event) {
+          if (ref.current && !ref.current.contains(event.target)) {
+            setShowOptions({ ...showOptions, show: false });
+          }
+        }
+
+        // Bind the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+          // Unbind the event listener on clean up
+          document.removeEventListener('mousedown', handleClickOutside);
+        };
+      }, [ref]);
+    }
+
+    const wrapperRef = useRef(null);
+    useOutsideAlerter(wrapperRef);
+
     return (
-      <>
+      <div ref={wrapperRef}>
         {(() => {
           switch (type) {
             case 'CHECKBOX':
@@ -185,7 +202,7 @@ export default function Filter({ filter, dispatchFilter }) {
               return;
           }
         })()}
-      </>
+      </div>
     );
   }
 
