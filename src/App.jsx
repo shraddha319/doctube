@@ -36,7 +36,7 @@ export default function App() {
     <div className="App">
       <Nav pathname={location.pathname} />
       <ScrollToTop>
-        {auth.status === 'loading' || playlists.status === 'loading' ? (
+        {playlists.status === 'loading' ? (
           <Loader />
         ) : (
           <div className="main">
