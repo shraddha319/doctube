@@ -2,7 +2,7 @@ import './Form.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { signupValidationRules, validate } from '../../validations';
-import { useAuth, useUser } from '../../contexts';
+import { useAuth, useUser, useToast } from '../../contexts';
 
 export default function Signup() {
   const [input, setInput] = useState({
@@ -26,6 +26,7 @@ export default function Signup() {
     signUpUser,
   } = useAuth();
   const { dispatchUser } = useUser();
+  const { dispatchToast } = useToast();
 
   useEffect(() => {
     if (status === 'failed' && error && error.statusCode === 400) {
@@ -35,9 +36,19 @@ export default function Signup() {
           return { ...errObj, [key]: message };
         }, {})
       );
+      dispatchToast({
+        type: 'TRIGGER_TOAST',
+        payload: { type: 'error', body: 'Sign Up failed!' },
+      });
     }
 
-    if (status === 'success') navigate('/watch');
+    if (status === 'success') {
+      dispatchToast({
+        type: 'TRIGGER_TOAST',
+        payload: { type: 'success', body: 'User registered!' },
+      });
+      navigate('/watch');
+    }
   }, [status, navigate, error]);
 
   async function signupHandler() {

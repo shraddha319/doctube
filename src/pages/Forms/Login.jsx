@@ -2,7 +2,7 @@ import './Form.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { loginValidationRules, validate } from '../../validations';
-import { useAuth, useUser } from '../../contexts';
+import { useAuth, useUser, useToast } from '../../contexts';
 
 export default function Login() {
   const [input, setInput] = useState({
@@ -21,6 +21,7 @@ export default function Login() {
     dispatchAuth,
   } = useAuth();
   const { dispatchUser } = useUser();
+  const { dispatchToast } = useToast();
 
   useEffect(() => {
     if (status === 'failed' && !error) {
@@ -29,7 +30,15 @@ export default function Login() {
         password: '',
         login: 'Invalid email/password.',
       });
+      dispatchToast({
+        type: 'TRIGGER_TOAST',
+        payload: { type: 'error', body: 'Login failed!' },
+      });
     } else if (status === 'success') {
+      dispatchToast({
+        type: 'TRIGGER_TOAST',
+        payload: { type: 'success', body: 'Login successful!' },
+      });
       navigate('/watch');
     }
   }, [status, navigate]);
@@ -51,7 +60,6 @@ export default function Login() {
       email: process.env.REACT_APP_TEST_EMAIL,
       password: process.env.REACT_APP_TEST_PASSWORD,
     };
-    console.log({ env: process.env, credentials });
     loginUser(dispatchAuth, dispatchUser, credentials);
   }
 
@@ -108,7 +116,7 @@ export default function Login() {
               onClick={testLoginHandler}
               className="btn btn--action btn--sm"
             >
-              Test Login
+              Guest Login
             </button>
           </p>
           <p>
